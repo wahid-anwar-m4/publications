@@ -20,10 +20,17 @@ import lombok.Data;
 public class Author {
 	@Id
 	@GeneratedValue
-	private long id;
+	private Long id;
 	private int version;
 	private String firstName;
 	private String lastName;
+	private int age;
+	private GenderTypeEnum gender;
+	
+	public enum GenderTypeEnum {
+		M, F
+	}
+	
 	@ManyToMany
 	private Set<Publication> publications = new HashSet<>();
 

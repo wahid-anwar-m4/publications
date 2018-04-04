@@ -35,7 +35,7 @@ public class PublicationTest {
 	}
 
 	@Test
-	public void test3InsertBook() {
+	public void test2InsertBook() {
 		Publication publication = publicationRepository.save(sample());
 		assertThat(publication).isNotNull();
 	}

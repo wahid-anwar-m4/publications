@@ -18,45 +18,48 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.metafour.jpa.publications.bean.Author;
+import com.metafour.jpa.publications.bean.Author.GenderTypeEnum;
 import com.metafour.jpa.publications.bean.BlogPost;
 import com.metafour.jpa.publications.bean.Publication;
-import com.metafour.jpa.publications.repository.AuthorRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @Rollback(false)
-public class AuthorTests {
+public class AuthorTestsWithEntityManager {
+	private static final String FIRST_NAME = "Wahid";
+	private static final String LAST_NAME = "Anwar";
+	private static final String BLOG_TITLE = "blog1";
+	private static final String BLOG_SUBJECT = "JPA, JPQL and Spring Data";
+	private static final int AGE = 35;
 	private static long authorId = 0L;
-	@Autowired
-	private AuthorRepository authorRepository;
-
-
+	
 	@PersistenceContext
 	private EntityManager jpa;
 
 	@Test
 	public void test1Up() {
-		assertThat(authorRepository).isNotNull();
+		assertThat(jpa).isNotNull();
 	}
 
 	private Author sample() {
 		Author author = new Author();
-		author.setFirstName("Wahid");
-		author.setLastName("Anwar");
+		author.setFirstName(FIRST_NAME);
+		author.setLastName(LAST_NAME);
+		author.setAge(AGE);
+		author.setGender(GenderTypeEnum.M);
 		return author;
 	}
 
 	private BlogPost blogSample() {
 		BlogPost blog = new BlogPost();
-		blog.setTitle("blog1");
-		blog.setSubject("JPA, JPQL and Spring Data");
+		blog.setTitle(BLOG_TITLE);
+		blog.setSubject(BLOG_SUBJECT);
 		blog.setPublicationDate(LocalDate.now());
 		return blog;
 	}
@@ -75,7 +78,7 @@ public class AuthorTests {
 		Author author1 = jpa.find(Author.class, authorId);
 		assertThat(author1).isNotNull();
 	}
-	
+
 	@Test
 	@Transactional
 	public void test3Merge() {
@@ -100,14 +103,17 @@ public class AuthorTests {
 		author1 = jpa.find(Author.class, authorId);
 		assertThat(author1).isNull();
 	}
-	
+
 	@Test
+	@Transactional
 	public void test5SelectWithJPQL() {
+		test1Persist();
+		test3Merge();
 		List<Author> authors = jpa.createQuery("SELECT a FROM Author a", Author.class).getResultList();
 		assertThat(authors).isNotNull();
 		assertThat(authors).isNotEmpty();
 	}
-	
+
 	@Test
 	public void test6SelectWithNamedQuery() {
 		List<Author> authors = jpa.createNamedQuery("au.ByFirstName", Author.class).setParameter("firstName", "wahid")
@@ -115,42 +121,24 @@ public class AuthorTests {
 		assertThat(authors).isNotNull();
 		assertThat(authors).isNotEmpty();
 	}
-	
+
 	@Test
-	public void test7SelectWithCRUDRepository() {
-		Author author = authorRepository.findByFirstName("Wahid");
-		assertThat(author).isNotNull();
-	}
-	
-	@Test
-	public void test8SelectWithSpringData() {
-		Author author = authorRepository.findByFirstNameSpringData("Wahid");
-		assertThat(author).isNotNull();
-	}
-	
-	@Test
-	public void test9SelectWithNativeCRUD() {
-		Author author = authorRepository.findByFirstNameWithNativeSQL("wahid");
-		assertThat(author).isNotNull();
-	}
-	
-	@Test
-	public void test10SelectWithCriteria() {
+	public void test7SelectWithCriteria() {
 		CriteriaBuilder builder = jpa.getCriteriaBuilder();
 		CriteriaQuery<Author> query = builder.createQuery(Author.class);
 		Root<Author> authorRoot = query.from(Author.class);
 		Join<Author, Publication> publicationRoot = authorRoot.join("publications", JoinType.LEFT);
-		query.where(builder.equal(publicationRoot.get("title"), "blog1"));
+		query.where(builder.equal(publicationRoot.get("title"), BLOG_TITLE));
 		List<Author> allocations = jpa.createQuery(query.select(authorRoot)).getResultList();
 		assertThat(allocations).isNotNull();
-		assertThat(allocations).isNotEmpty(); 
+		assertThat(allocations).isNotEmpty();
 	}
 	
 	@Test
-	public void test11SelectWithNative() {
+	public void test8SelectWithNative() {
 		@SuppressWarnings("unchecked")
 		// note that publications list not loaded, threw an exception.
-		// with native query one has to iterate through results and populate to 
+		// with native query one has to iterate through results and populate to
 		// specific model.
 		List<Author> authors = jpa.createNativeQuery("SELECT a.* FROM Author a", Author.class).getResultList();
 		assertThat(authors).isNotNull();
