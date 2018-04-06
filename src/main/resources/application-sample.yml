@@ -1,15 +1,6 @@
-spring:
+spring: 
   datasource:
-    url: jdbc:postgresql://localhost:5432/springbootdb
+    url: jdbc:postgresql://localhost:5432/publications
     username: postgres
     password: postgres
-    driverClassName: org.postgresql.Driver
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        temp:
-          use_jdbc_metadata_defaults: false
+    driver-class-name: org.postgresql.Driver
