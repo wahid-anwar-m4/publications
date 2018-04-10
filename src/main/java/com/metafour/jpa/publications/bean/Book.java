@@ -15,11 +15,6 @@ import lombok.NonNull;
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 public class Book extends Publication {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 493861595777097124L;
-
 	@NonNull
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "publisher_id")

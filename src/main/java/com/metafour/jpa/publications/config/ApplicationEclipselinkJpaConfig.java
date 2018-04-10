@@ -76,7 +76,7 @@ public class ApplicationEclipselinkJpaConfig extends JpaBaseConfiguration {
 
 	@Override
 	protected Map<String, Object> getVendorProperties() {
-		Map<String, Object> vendorProperties = new LinkedHashMap<String, Object>();
+		Map<String, Object> vendorProperties = new LinkedHashMap<>();
 		vendorProperties.putAll(this.properties.getProperties());
 		vendorProperties.put("eclipselink.ddl-generation", "create-or-extend-tables");
 		vendorProperties.put("eclipselink.ddl-generation.output-mode", "database");
@@ -89,11 +89,11 @@ public class ApplicationEclipselinkJpaConfig extends JpaBaseConfiguration {
 	@Order(Ordered.HIGHEST_PRECEDENCE + 20)
 	public static class EclipseLinkEntityManagerCondition extends SpringBootCondition {
 
-		private static String[] CLASS_NAMES = { "org.eclipse.persistence.jpa.JpaEntityManager" };
+		private static String[] classNames = { "org.eclipse.persistence.jpa.JpaEntityManager" };
 
 		@Override
 		public ConditionOutcome getMatchOutcome(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-			for (String className : CLASS_NAMES) {
+			for (String className : classNames) {
 				if (ClassUtils.isPresent(className, context.getClassLoader())) {
 					return ConditionOutcome.match("found EclipselinkEntityManager class");
 				}

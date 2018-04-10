@@ -1,6 +1,5 @@
 package com.metafour.jpa.publications.bean;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,11 +17,7 @@ import lombok.Data;
 @NamedQueries({
 	@NamedQuery(name ="au.ByFirstName", query = "SELECT a FROM Author a WHERE UPPER(a.firstName)=UPPER(:firstName)")
 })
-public class Author implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 595178816754472472L;
+public class Author {
 	@Id
 	@GeneratedValue
 	private Long id;
