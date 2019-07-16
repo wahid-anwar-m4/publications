@@ -1,0 +1,25 @@
+version: '2'
+services:
+  db:
+    image: postgres
+    container_name: db
+    restart: always
+    ports:
+      - 5432
+    volumes:
+      - /data
+    environment:
+      - PGDATA=/data
+      - POSTGRES_DB=publications
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      
+  registry:
+    image: metafour/publications:0.1.0
+    container_name: publications
+    restart: always
+    ports:
+      - 8888
+    environment:
+      - VIRTUAL_HOST=host.publications
+      - VIRTUAL_PORT=9999
